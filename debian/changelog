@@ -1,3 +1,6 @@
 nagios-nrpe-check-gitlabupdate (0.1.0-0) stable; urgency=low
   * First release
  -- CoolDuke <mail@coolduke.com>  Fri, 18 Oct 2013 11:57:35 +0200
+nagios-nrpe-check-gitlabupdate (0.1.1-0) stable; urgency=low
+  * hide output from git fetch command
+ -- CoolDuke <mail@coolduke.com>  Fri, 18 Oct 2013 12:36:51 +0200

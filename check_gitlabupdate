@@ -51,7 +51,7 @@ $debug && print "Current version: $cur_version\n";
 
 #fetch gitlab source
 chdir($gitlab_path);
-if(system("sudo -u $gitlab_user -H git fetch")){
+if(system("sudo -u $gitlab_user -H git fetch >/dev/null")){
   print "UNKNOWN - Unable to fetch gitlab repository\n";
   exit 3;
 }
