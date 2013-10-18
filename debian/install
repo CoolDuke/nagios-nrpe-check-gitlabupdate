@@ -1,0 +1,6 @@
+check_gitlabupdate /usr/lib/nagios/plugins
+nrpe.d/check_gitlabupdate.cfg /etc/nagios/nrpe.d
+sudoers.d/check_gitlabupdate /etc/sudoers.d
+AUTHORS  /usr/share/doc/nagios-nrpe-check-gitlabupdate
+COPYING /usr/share/doc/nagios-nrpe-check-gitlabupdate
+README  /usr/share/doc/nagios-nrpe-check-gitlabupdate

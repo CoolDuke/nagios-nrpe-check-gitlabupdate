@@ -1,0 +1,12 @@
+This is a perl script that checks for updates of GitLab intended to use with 
+the Nagios NRPE daemon by comparing the installed version number with the 
+latest tag in the GitLab repository.
+
+It uses the default pathes as used in the GitLab documentation. If you 
+want to change them, you have to edit the first lines of the script.
+
+You can create a debian package using dpkg-buildpackage in the repository
+root and install it using your package manager.
+
+The scripts needs superuser rights to run, a sudo configuration file is
+included.

@@ -1,0 +1,98 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+#check_gitlabupdate.pl
+#Nagios plugin to check if there is a new GitLab version available
+#Version: 20131018
+#Author:  Christoph Hoth <christoph.hoth@mashero.com>
+
+#This program is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#The Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#configuration
+my $gitlab_user="git";
+my $gitlab_path="/home/git/gitlab";
+my $wget="/usr/bin/wget";
+
+my $debug=0;
+
+#declare variables
+my $cur_version;
+my $new_version;
+
+#get current version
+open(VERSIONFILE,"< $gitlab_path/VERSION") or die "Unable to open $gitlab_path/VERSION";
+while(<VERSIONFILE>){
+  if($_=~/^([\d\.]+)$/){
+    $cur_version=$1;
+    last;
+  }
+}
+close(VERSIONFILE);
+
+#cancel if current version couldn't be determined
+if(!$cur_version){
+  print "UNKNOWN Unable to determine current version\n";
+  exit 3;
+}
+
+$debug && print "Current version: $cur_version\n";
+
+#fetch gitlab source
+chdir($gitlab_path);
+if(system("sudo -u $gitlab_user -H git fetch")){
+  print "UNKNOWN - Unable to fetch gitlab repository\n";
+  exit 3;
+}
+
+#read latest tag that is neither release-candidate nor pre-release
+open(PIPE,"git tag -l|grep -Ev 'rc|pre' |tail -n1|");
+while(<PIPE>){
+  if($_=~/^v([\d\.]+)$/){
+    $new_version=$1;
+    last;
+  }
+}
+close(PIPE);
+
+#cancle if no latest tag found
+if(!$new_version){
+  print "UNKNOWN Unable to retrieve latest version number from gitlab tag list\n";
+  exit 3;
+}
+
+$debug && print "Latest version:  $new_version\n";
+
+#compare versions
+my @cur=split(/\./,$cur_version);
+my @new=split(/\./,$new_version);
+
+my $arraycount=0;
+if(@cur gt @new){$arraycount=@cur;}
+else{$arraycount=@new;}
+
+my $found=0;
+for(my $i=0;$i<$arraycount;$i++){
+  if($cur[$i]<$new[$i]){
+    $found=1;
+    last;
+  }
+}
+if($found){
+  print "CRITICAL New version available $new_version (current: $cur_version)\n";
+  exit 2;
+}else{
+  print "OK GitLab is up to date ($cur_version)\n";
+  exit 0;
+}
