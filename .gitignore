@@ -1,0 +1,5 @@
+debian/nagios-nrpe-check-gitlabupdate.debhelper.log
+debian/nagios-nrpe-check-gitlabupdate.substvars
+debian/nagios-nrpe-check-gitlabupdate
+debian/files
+
