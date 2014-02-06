@@ -4,7 +4,7 @@ use strict;
 
 #check_gitlabupdate.pl
 #Nagios plugin to check if there is a new GitLab version available
-#Version: 20131021
+#Version: 20140207
 #Author:  Christoph Hoth <christoph.hoth@mashero.com>
 
 #This program is free software: you can redistribute it and/or modify
@@ -21,15 +21,16 @@ use strict;
 #along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #configuration
-my $gitlab_user="git";
 my $gitlab_path="/home/git/gitlab";
-my $wget="/usr/bin/wget";
+my $spoolfile="/var/spool/check_gitlabupdate";
+my $allowed_lastcron_days=5;
 
 my $debug=0;
 
 #declare variables
 my $cur_version;
 my $new_version;
+my $lastcron;
 
 #get current version
 open(VERSIONFILE,"< $gitlab_path/VERSION") or die "Unable to open $gitlab_path/VERSION";
@@ -49,26 +50,23 @@ if(!$cur_version){
 
 $debug && print "Current version: $cur_version\n";
 
-#fetch gitlab source
-chdir($gitlab_path);
-if(system("sudo -u $gitlab_user -H git fetch >/dev/null")){
-  print "UNKNOWN - Unable to fetch gitlab repository\n";
+#read latest version from spoolfile
+if(!open(SPOOLFILE,"<$spoolfile")){
+  print "UNKNOWN Unable to open $spoolfile to get latest version number";
   exit 3;
 }
-
-#read latest tag that is neither release-candidate nor pre-release
-open(PIPE,"git tag -l|grep -Ev 'rc|pre' |tail -n1|");
-while(<PIPE>){
-  if($_=~/^v([\d\.]+)$/){
-    $new_version=$1;
+while(<SPOOLFILE>){
+  if($_=~/^(\d+) ([\d\.]+)$/){
+    $lastcron=$1;
+    $new_version=$2;
     last;
   }
 }
-close(PIPE);
+close(SPOOLFILE);
 
-#cancle if no latest tag found
+#cancel if no latest tag found
 if(!$new_version){
-  print "UNKNOWN Unable to retrieve latest version number from gitlab tag list\n";
+  print "UNKNOWN Unable to retrieve latest version number from spoolfile\n";
   exit 3;
 }
 
@@ -93,6 +91,12 @@ if($found){
   print "WARNING New version available $new_version (current: $cur_version)\n";
   exit 1;
 }else{
-  print "OK GitLab is up to date ($cur_version)\n";
-  exit 0;
+  #check if last cronjob check was running within the allowed time difference
+  if($lastcron<(time()-$allowed_lastcron_days*86400)){
+    print "WARNING Last successful check was running more than $allowed_lastcron_days days ago at ".localtime($lastcron)." (current version $cur_version)\n";
+    exit 1;
+  }else{
+    print "OK GitLab is up to date ($cur_version)\n";
+    exit 0;
+  }
 }

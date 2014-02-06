@@ -1,6 +1,7 @@
 This is a perl script that checks for updates of GitLab intended to use with 
 the Nagios NRPE daemon by comparing the installed version number with the 
-latest tag in the GitLab repository.
+latest tag in the GitLab repository. Fetching the repository is done by a
+daily running cronjob, that stores the latest version in a spool file.
 
 It uses the default pathes as used in the GitLab documentation. If you 
 want to change them, you have to edit the first lines of the script.

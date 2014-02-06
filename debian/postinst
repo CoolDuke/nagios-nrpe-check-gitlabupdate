@@ -5,4 +5,10 @@
 if [ $? == 0 ]; then
   /etc/init.d/nagios-nrpe-server reload
 fi
+
+#run cronjob to create spool file if it doesn't exist
+if [ ! -f /var/spool/check_gitlabupdate ]; then
+  /etc/cron.daily/check_gitlabupdate --force-ok
+fi
+
 exit 0

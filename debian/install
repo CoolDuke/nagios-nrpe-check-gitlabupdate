@@ -1,4 +1,5 @@
 check_gitlabupdate /usr/lib/nagios/plugins
+cron.daily/check_gitlabupdate /etc/cron.daily
 nrpe.d/check_gitlabupdate.cfg /etc/nagios/nrpe.d
 sudoers.d/check_gitlabupdate /etc/sudoers.d
 AUTHORS  /usr/share/doc/nagios-nrpe-check-gitlabupdate

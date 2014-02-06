@@ -5,4 +5,10 @@
 if [ $? == 0 ]; then
   /etc/init.d/nagios-nrpe-server reload
 fi
+
+#delete spoolfile
+if [ -f /var/spool/check_gitlabupdate ]; then
+  rm -f /var/spool/check_gitlabupdate
+fi
+
 exit 0

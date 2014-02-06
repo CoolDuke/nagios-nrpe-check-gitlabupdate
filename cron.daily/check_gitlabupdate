@@ -1,0 +1,74 @@
+#!/usr/bin/perl -w
+
+use strict;
+
+#check_gitlabupdate (cronjob)
+#Stores the last available version of GitLab in a spool file for the
+#check_gitlabupdate Nagios plugin
+#Version: 20140207
+#Author:  Christoph Hoth <christoph.hoth@mashero.com>
+
+#This program is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#The Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#This program is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#configuration
+my $gitlab_user="git";
+my $gitlab_path="/home/git/gitlab";
+my $wget="/usr/bin/wget";
+my $spoolfile="/var/spool/check_gitlabupdate";
+
+my $debug=0;
+
+#debian-specific command line parameter --force-ok allows the postinst
+#script to run the script without breaking apt-get process
+my $forceok=0;
+if(@ARGV && $ARGV[0] eq "--force-ok"){$forceok=1;}
+
+#declare variables
+my $cur_version;
+my $new_version;
+
+#fetch gitlab source
+chdir($gitlab_path);
+if(system("sudo -u $gitlab_user -H git fetch >/dev/null")){
+  print "Error: Unable to fetch gitlab repository\n";
+  if($forceok){exit 0;}
+  exit 1;
+}
+
+#read latest tag that is neither release-candidate nor pre-release
+open(PIPE,"git tag -l|grep -Ev 'rc|pre' |tail -n1|");
+while(<PIPE>){
+  if($_=~/^v([\d\.]+)$/){
+    $new_version=$1;
+    last;
+  }
+}
+close(PIPE);
+
+#cancel if no latest tag found
+if(!$new_version){
+  print "Error: Unable to retrieve latest version number from gitlab tag list\n";
+  if($forceok){exit 0;}
+  exit 2;
+}
+
+$debug && print "Latest version:  $new_version\n";
+
+if(!open(SPOOLFILE,">$spoolfile")){
+  print "Error: Unable to open $spoolfile for write\n";
+  if($forceok){exit 0;}
+  exit 3;
+}
+print SPOOLFILE time()." $new_version";
+close(SPOOLFILE);

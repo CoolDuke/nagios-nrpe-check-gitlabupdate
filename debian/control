@@ -2,11 +2,11 @@ Source: nagios-nrpe-check-gitlabupdate
 Section: net
 Priority: extra
 Maintainer: CoolDuke <mail@coolduke.com>
-Standards-Version: 0.1.2-0
+Standards-Version: 0.2.1-0
 Build-Depends: debhelper (>= 8.0.0)
 
 Package: nagios-nrpe-check-gitlabupdate
 Architecture: all
-Depends: lsb-release, nagios-nrpe-server, sudo
+Depends: lsb-release, nagios-nrpe-server, sudo, cron
 Description: Nagios plugin to check if there is a
  new GitLab version available
