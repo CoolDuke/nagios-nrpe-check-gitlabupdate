@@ -1,8 +1,8 @@
 #!/bin/bash
 
 #reload nrpe configuration if daemon is running
-service nagios-nrpe-server status > /dev/null
+/etc/init.d/nagios-nrpe-server status > /dev/null
 if [ $? == 0 ]; then
-  service nagios-nrpe-server reload
+  /etc/init.d/nagios-nrpe-server reload
 fi
 exit 0
