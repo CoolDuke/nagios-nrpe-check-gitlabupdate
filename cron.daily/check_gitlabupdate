@@ -5,7 +5,6 @@ use strict;
 #check_gitlabupdate (cronjob)
 #Stores the last available version of GitLab in a spool file for the
 #check_gitlabupdate Nagios plugin
-#Version: 20140211
 #Author:  Christoph Hoth <christoph.hoth@mashero.com>
 
 #This program is free software: you can redistribute it and/or modify
@@ -47,7 +46,7 @@ if(system("sudo -u $gitlab_user -H git fetch -q >/dev/null")){
 }
 
 #read latest tag that is neither release-candidate nor pre-release
-open(PIPE,"git tag -l|grep -Ev 'rc|pre' |tail -n1|");
+open(PIPE,"git tag -l | grep -Ev 'rc|pre' | sort -V | tail -n1|");
 while(<PIPE>){
   if($_=~/^v([\d\.]+)$/){
     $new_version=$1;

@@ -2,7 +2,7 @@ Source: nagios-nrpe-check-gitlabupdate
 Section: net
 Priority: extra
 Maintainer: CoolDuke <mail@coolduke.com>
-Standards-Version: 0.2.2-0
+Standards-Version: 0.2.3-0
 Build-Depends: debhelper (>= 8.0.0)
 
 Package: nagios-nrpe-check-gitlabupdate

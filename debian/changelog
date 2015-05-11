@@ -1,3 +1,6 @@
+nagios-nrpe-check-gitlabupdate (0.2.3-0) stable; urgency=low
+  * fixes cronjob getting wrong version number
+ -- Christoph Hoth <christoph.hoth@mashero.com>  Mon, 11 May 2015 10:14:39 +0200
 nagios-nrpe-check-gitlabupdate (0.2.2-0) stable; urgency=low
   * fixes cronjob printing git fetch output
  -- CoolDuke <mail@coolduke.com>  Tue, 11 Feb 2014 16:40:21 +0100
